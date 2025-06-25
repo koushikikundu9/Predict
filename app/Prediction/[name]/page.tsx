@@ -30,60 +30,40 @@ const getPredictedCountry = async (name: string): Promise<CountryResponse> => {
     return res.json();
 };
 
-// This is your Next.js Page component
 interface PageProps {
     name: string;
-    age: number | null;
-    gender: string | null;
-    country: string | null;
 }
 
-const Page: React.FC<PageProps> = ({ name, age, gender, country }) => {
-    return (
-        <div className="text-center mt-6 border-t border-gray-109">
-            <div className="px-4 sm:px-0">
-                <h2 className="text-base/7 font-semibold text-gray-900">Personal Info</h2>
-                <p>{name}</p>
-                <p>Age: {age ?? "Unknown"}</p>
-                <p>Gender: {gender ?? "Unknown"}</p>
-                <p>Country: {country ?? "Unknown"}</p>
-            </div>
-            <div className="mt-6 border-t border-gray-109"></div>
-        </div>
-    );
-};
-
-// This function will fetch data during build-time (or for each request depending on your use case)
-export async function getServerSideProps(context: any) {
-    const { name } = context.params; // Extract the name from the URL params
+const Page = async ({ params }: { params: PageProps }) => {
+    const { name } = params; // Extract name from params
 
     try {
-        // Fetching data concurrently using Promise.all
+        // Await data fetching for age, gender, and country
         const [age, gender, country] = await Promise.all([
             getPredictedAge(name),
             getPredictedGender(name),
             getPredictedCountry(name)
         ]);
 
-        // Return the fetched data as props to the page component
-        return {
-            props: {
-                name,
-                age: age?.age ?? null,
-                gender: gender?.gender ?? null,
-                country: country?.country?.[0]?.country_id ?? null
-            }
-        };
+        return (
+            <div className="text-center mt-6 border-t border-gray-109">
+                <div className="px-4 sm:px-0">
+                    <h2 className="text-base/7 font-semibold text-gray-900">Personal Info</h2>
+                    <p>{name}</p>
+                    <p>Age: {age?.age ?? "Unknown"}</p>
+                    <p>Gender: {gender?.gender ?? "Unknown"}</p>
+                    <p>Country: {country?.country?.[0]?.country_id ?? "Unknown"}</p>
+                </div>
+                <div className="mt-6 border-t border-gray-109"></div>
+            </div>
+        );
     } catch (error) {
-        return {
-            props: {
-                name,
-                age: null,
-                gender: null,
-                country: null
-            }
-        };
+        return (
+            <div className="text-center mt-6 border-t border-gray-109">
+                <p>Error: {error.message}</p>
+            </div>
+        );
     }
-}
+};
 
 export default Page;
