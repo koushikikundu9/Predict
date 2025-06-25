@@ -48,7 +48,7 @@ const Page = async ({name}: Params) => {
             <div className="text-center mt-6 border-t border-gray-109">
                 <div className="px-4 sm:px-0">
                     <h2 className="text-base/7 font-semibold text-gray-900">Personal Info</h2>
-                    <p>{name}</p>
+                    <p></p>
                     <p>Age: {age?.age ?? "Unknown"}</p>
                     <p>Gender: {gender?.gender ?? "Unknown"}</p>
                     <p>Country: {country?.country?.[0]?.country_id ?? "Unknown"}</p>
@@ -59,7 +59,7 @@ const Page = async ({name}: Params) => {
     } catch (error) {
         return (
             <div className="text-center mt-6 border-t border-gray-109">
-                <p>Error: {error.message}</p>
+                <p>Error</p>
             </div>
         );
     }
