@@ -30,12 +30,11 @@ const getPredictedCountry = async (name: string): Promise<CountryResponse> => {
     return res.json();
 };
 
-interface PageProps {
+interface Params {
     name: string;
 }
 
-const Page = async ({ params }: { params: PageProps }) => {
-    const { name } = params; // Extract name from params
+const Page = async ({name}: Params) => {
 
     try {
         // Await data fetching for age, gender, and country
