@@ -1,6 +1,5 @@
 import React from "react";
 
-// Type definitions for API responses
 interface AgeResponse {
     age: number;
 }
@@ -31,36 +30,60 @@ const getPredictedCountry = async (name: string): Promise<CountryResponse> => {
     return res.json();
 };
 
-interface Params {
-    params: { name: string };
+// This is your Next.js Page component
+interface PageProps {
+    name: string;
+    age: number | null;
+    gender: string | null;
+    country: string | null;
 }
 
-export default async function Page({ params }: Params) {
+const Page: React.FC<PageProps> = ({ name, age, gender, country }) => {
+    return (
+        <div className="text-center mt-6 border-t border-gray-109">
+            <div className="px-4 sm:px-0">
+                <h2 className="text-base/7 font-semibold text-gray-900">Personal Info</h2>
+                <p>{name}</p>
+                <p>Age: {age ?? "Unknown"}</p>
+                <p>Gender: {gender ?? "Unknown"}</p>
+                <p>Country: {country ?? "Unknown"}</p>
+            </div>
+            <div className="mt-6 border-t border-gray-109"></div>
+        </div>
+    );
+};
+
+// This function will fetch data during build-time (or for each request depending on your use case)
+export async function getServerSideProps(context: any) {
+    const { name } = context.params; // Extract the name from the URL params
+
     try {
-        // Await each async function before passing to Promise.all
+        // Fetching data concurrently using Promise.all
         const [age, gender, country] = await Promise.all([
-            getPredictedAge(params.name),
-            getPredictedGender(params.name),
-            getPredictedCountry(params.name),
+            getPredictedAge(name),
+            getPredictedGender(name),
+            getPredictedCountry(name)
         ]);
 
-        return (
-            <div className="text-center mt-6 border-t border-gray-109">
-                <div className="px-4 sm:px-0">
-                    <h2 className="text-base/7 font-semibold text-gray-900">Personal Info</h2>
-                    <p>{params.name}</p>
-                    <p>Age: {age?.age ?? "Unknown"}</p>
-                    <p>Gender: {gender?.gender ?? "Unknown"}</p>
-                    <p>Country: {country?.country?.[0]?.country_id ?? "Unknown"}</p>
-                </div>
-                <div className="mt-6 border-t border-gray-109"></div>
-            </div>
-        );
+        // Return the fetched data as props to the page component
+        return {
+            props: {
+                name,
+                age: age?.age ?? null,
+                gender: gender?.gender ?? null,
+                country: country?.country?.[0]?.country_id ?? null
+            }
+        };
     } catch (error) {
-        return (
-            <div className="text-center mt-6 border-t border-gray-109">
-                <p>Error: {error.message}</p>
-            </div>
-        );
+        return {
+            props: {
+                name,
+                age: null,
+                gender: null,
+                country: null
+            }
+        };
     }
 }
+
+export default Page;
